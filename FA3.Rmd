@@ -1,0 +1,1422 @@
+---
+title: "APM1205 Formative Assessment 3: Linear Models"
+author: "Student Name"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+
+library(knitr)
+
+# ============================================================
+# General setup
+# ============================================================
+
+# The FA3 PDF refers to the original regression from Exercise 5.4.
+# Since the numerical results from Exercise 5.4 are not included
+# in the FA3 PDF, Question 3 is expressed in terms of the original
+# slope B and its standard error SE(B).
+
+# Enter the original values from Exercise 5.4 here if available.
+B_original <- NA
+SE_B_original <- NA
+
+# Transformation constants
+a_x <- 10
+c_x <- -1
+
+a_y <- 5
+c_y <- 2
+```
+
+# APM1205 Formative Assessment 3: Linear Models
+
+## Introduction
+
+This assessment considers the simple linear regression model
+
+\[
+Y_i = \alpha + \beta x_i + \epsilon_i,
+\]
+
+where \(i=1,\ldots,n\).
+
+The objective is to demonstrate the unbiasedness and sampling variances of the least-squares estimators and then examine how linear transformations of \(X\) and \(Y\) affect regression results.
+
+---
+
+# 1. Unbiasedness of the Least-Squares Estimators
+
+## 1(a). Unbiasedness of the Least-Squares Slope Estimator \(B\)
+
+The least-squares estimator of the slope is
+
+\[
+B =
+\frac{\displaystyle\sum_{i=1}^{n}(x_i-\bar{x})(Y_i-\bar{Y})}
+{\displaystyle\sum_{i=1}^{n}(x_i-\bar{x})^2}.
+\]
+
+Let
+
+\[
+S_{xx} = \sum_{i=1}^{n}(x_i-\bar{x})^2.
+\]
+
+Therefore,
+
+\[
+B =
+\frac{\sum_{i=1}^{n}(x_i-\bar{x})(Y_i-\bar{Y})}
+{S_{xx}}.
+\]
+
+Because
+
+\[
+\sum_{i=1}^{n}(x_i-\bar{x})=0,
+\]
+
+we have
+
+\[
+\sum_{i=1}^{n}(x_i-\bar{x})\bar{Y}=0.
+\]
+
+Thus,
+
+\[
+B =
+\frac{\sum_{i=1}^{n}(x_i-\bar{x})Y_i}
+{S_{xx}}.
+\]
+
+Therefore \(B\) can be written as a linear function of the observations:
+
+\[
+B =
+\sum_{i=1}^{n}m_iY_i,
+\]
+
+where
+
+\[
+m_i =
+\frac{x_i-\bar{x}}{S_{xx}}.
+\]
+
+### Expected value of \(B\)
+
+Using the linearity of expectation,
+
+\[
+E(B)
+=
+E\left(\sum_{i=1}^{n}m_iY_i\right)
+\]
+
+and therefore
+
+\[
+E(B)
+=
+\sum_{i=1}^{n}m_iE(Y_i).
+\]
+
+Under the linear regression assumption,
+
+\[
+E(Y_i)=\alpha+\beta x_i.
+\]
+
+Therefore,
+
+\[
+E(B)
+=
+\sum_{i=1}^{n}
+\frac{x_i-\bar{x}}{S_{xx}}
+(\alpha+\beta x_i).
+\]
+
+Expanding,
+
+\[
+E(B)
+=
+\frac{\alpha\sum(x_i-\bar{x})
++
+\beta\sum(x_i-\bar{x})x_i}
+{S_{xx}}.
+\]
+
+Since
+
+\[
+\sum(x_i-\bar{x})=0,
+\]
+
+the first term disappears:
+
+\[
+E(B)
+=
+\frac{\beta\sum(x_i-\bar{x})x_i}
+{S_{xx}}.
+\]
+
+Now,
+
+\[
+\sum(x_i-\bar{x})x_i
+=
+\sum(x_i-\bar{x})^2
+=
+S_{xx}.
+\]
+
+Hence,
+
+\[
+E(B)
+=
+\frac{\beta S_{xx}}{S_{xx}}
+=
+\boxed{\beta}.
+\]
+
+Therefore,
+
+\[
+\boxed{E(B)=\beta}.
+\]
+
+Thus, the least-squares slope estimator \(B\) is an **unbiased estimator** of the population slope \(\beta\).
+
+---
+
+## 1(b). Unbiasedness of the Least-Squares Intercept Estimator \(A\)
+
+The least-squares estimator of the intercept is
+
+\[
+A=\bar{Y}-B\bar{x}.
+\]
+
+Substituting
+
+\[
+B=\sum_{i=1}^{n}m_iY_i,
+\]
+
+we obtain
+
+\[
+A
+=
+\bar{Y}
+-
+\bar{x}\sum_{i=1}^{n}m_iY_i.
+\]
+
+Since
+
+\[
+\bar{Y}
+=
+\frac{1}{n}\sum_{i=1}^{n}Y_i,
+\]
+
+we have
+
+\[
+A
+=
+\frac{1}{n}\sum_{i=1}^{n}Y_i
+-
+\bar{x}\sum_{i=1}^{n}m_iY_i.
+\]
+
+Therefore,
+
+\[
+A
+=
+\sum_{i=1}^{n}
+\left(
+\frac{1}{n}-\bar{x}m_i
+\right)Y_i.
+\]
+
+Thus \(A\) is also a linear function of the observations.
+
+Define
+
+\[
+c_i
+=
+\frac{1}{n}-\bar{x}m_i.
+\]
+
+Then
+
+\[
+A=\sum_{i=1}^{n}c_iY_i.
+\]
+
+### Expected value of \(A\)
+
+Using linearity of expectation,
+
+\[
+E(A)
+=
+\sum_{i=1}^{n}c_iE(Y_i).
+\]
+
+Since
+
+\[
+E(Y_i)=\alpha+\beta x_i,
+\]
+
+we obtain
+
+\[
+E(A)
+=
+\sum_{i=1}^{n}
+c_i(\alpha+\beta x_i).
+\]
+
+Therefore,
+
+\[
+E(A)
+=
+\alpha\sum c_i
++
+\beta\sum c_ix_i.
+\]
+
+First,
+
+\[
+\sum c_i
+=
+\sum
+\left(
+\frac{1}{n}-\bar{x}m_i
+\right).
+\]
+
+Since
+
+\[
+\sum\frac{1}{n}=1
+\]
+
+and
+
+\[
+\sum m_i
+=
+\frac{\sum(x_i-\bar{x})}{S_{xx}}
+=
+0,
+\]
+
+we have
+
+\[
+\sum c_i=1.
+\]
+
+Next,
+
+\[
+\sum c_ix_i
+=
+\sum
+\left(
+\frac{x_i}{n}
+-
+\bar{x}m_ix_i
+\right).
+\]
+
+Since
+
+\[
+\frac{1}{n}\sum x_i=\bar{x}
+\]
+
+and
+
+\[
+\sum m_ix_i=1,
+\]
+
+we obtain
+
+\[
+\sum c_ix_i
+=
+\bar{x}-\bar{x}
+=
+0.
+\]
+
+Consequently,
+
+\[
+E(A)
+=
+\alpha(1)+\beta(0).
+\]
+
+Therefore,
+
+\[
+\boxed{E(A)=\alpha}.
+\]
+
+Hence, the least-squares intercept estimator \(A\) is an **unbiased estimator** of the population intercept \(\alpha\).
+
+---
+
+# 2. Sampling Variances of \(A\) and \(B\)
+
+## Assumptions
+
+The following assumptions are used in deriving the sampling variances:
+
+1. **Linearity**
+
+\[
+E(Y_i)=\alpha+\beta x_i.
+\]
+
+2. **Constant variance**
+
+\[
+Var(Y_i)=\sigma^2.
+\]
+
+3. **Independence**
+
+For \(i\neq j\),
+
+\[
+Cov(Y_i,Y_j)=0.
+\]
+
+4. The \(x_i\)'s are treated as fixed values in the regression model.
+
+---
+
+## 2(a). Sampling Variance of \(B\)
+
+Recall that
+
+\[
+B=\sum_{i=1}^{n}m_iY_i,
+\]
+
+where
+
+\[
+m_i=\frac{x_i-\bar{x}}{S_{xx}}.
+\]
+
+For a linear combination of independent random variables,
+
+\[
+Var\left(\sum m_iY_i\right)
+=
+\sum m_i^2Var(Y_i).
+\]
+
+Therefore,
+
+\[
+Var(B)
+=
+\sum_{i=1}^{n}m_i^2\sigma^2.
+\]
+
+Hence,
+
+\[
+Var(B)
+=
+\sigma^2\sum_{i=1}^{n}
+\left(
+\frac{x_i-\bar{x}}{S_{xx}}
+\right)^2.
+\]
+
+Thus,
+
+\[
+Var(B)
+=
+\frac{\sigma^2}{S_{xx}^2}
+\sum_{i=1}^{n}(x_i-\bar{x})^2.
+\]
+
+Since
+
+\[
+\sum_{i=1}^{n}(x_i-\bar{x})^2=S_{xx},
+\]
+
+we obtain
+
+\[
+Var(B)
+=
+\frac{\sigma^2S_{xx}}
+{S_{xx}^2}.
+\]
+
+Therefore,
+
+\[
+\boxed{
+Var(B)=\frac{\sigma^2}{S_{xx}}
+}.
+\]
+
+The standard error of \(B\) is consequently
+
+\[
+\boxed{
+SE(B)=\frac{\sigma}{\sqrt{S_{xx}}}
+}.
+\]
+
+In practice, \(\sigma\) is estimated using the residual standard error \(s\), giving
+
+\[
+\boxed{
+SE(B)=\frac{s}{\sqrt{S_{xx}}}
+}.
+\]
+
+---
+
+## 2(b). Sampling Variance of \(A\)
+
+Recall
+
+\[
+A=\bar{Y}-B\bar{x}.
+\]
+
+Therefore,
+
+\[
+Var(A)
+=
+Var(\bar{Y}-\bar{x}B).
+\]
+
+Using the variance formula for a difference,
+
+\[
+Var(A)
+=
+Var(\bar{Y})
++
+\bar{x}^2Var(B)
+-
+2\bar{x}Cov(\bar{Y},B).
+\]
+
+Under the constant-variance and independence assumptions,
+
+\[
+Var(\bar{Y})
+=
+\frac{\sigma^2}{n}.
+\]
+
+We have already established that
+
+\[
+Var(B)
+=
+\frac{\sigma^2}{S_{xx}}.
+\]
+
+It remains to find \(Cov(\bar{Y},B)\).
+
+Since
+
+\[
+\bar{Y}
+=
+\frac{1}{n}\sum Y_i
+\]
+
+and
+
+\[
+B=\sum m_iY_i,
+\]
+
+we have
+
+\[
+Cov(\bar{Y},B)
+=
+Cov
+\left(
+\frac{1}{n}\sum Y_i,
+\sum m_iY_i
+\right).
+\]
+
+Using independence,
+
+\[
+Cov(\bar{Y},B)
+=
+\frac{\sigma^2}{n}
+\sum m_i.
+\]
+
+But
+
+\[
+\sum m_i
+=
+\frac{\sum(x_i-\bar{x})}{S_{xx}}
+=
+0.
+\]
+
+Therefore,
+
+\[
+Cov(\bar{Y},B)=0.
+\]
+
+Hence,
+
+\[
+Var(A)
+=
+\frac{\sigma^2}{n}
++
+\bar{x}^2
+\frac{\sigma^2}{S_{xx}}.
+\]
+
+Therefore,
+
+\[
+\boxed{
+Var(A)
+=
+\sigma^2
+\left(
+\frac{1}{n}
++
+\frac{\bar{x}^2}{S_{xx}}
+\right)
+}.
+\]
+
+The standard error of \(A\) is therefore
+
+\[
+\boxed{
+SE(A)
+=
+\sigma
+\sqrt{
+\frac{1}{n}
++
+\frac{\bar{x}^2}{S_{xx}}
+}
+}.
+\]
+
+In practice, replacing \(\sigma\) with the residual standard error \(s\),
+
+\[
+\boxed{
+SE(A)
+=
+s
+\sqrt{
+\frac{1}{n}
++
+\frac{\bar{x}^2}{S_{xx}}
+}
+}.
+\]
+
+---
+
+# 3. Linear Transformations of \(X\) and \(Y\)
+
+The FA3 instructions refer to Davis's regression of measured weight on reported weight from Exercise 5.4.
+
+The transformations required are:
+
+\[
+X'=10(X-1)
+\]
+
+and
+
+\[
+Y''=5(Y+2).
+\]
+
+The effects of these transformations can be determined directly from the properties of linear regression coefficients without repeating the complete regression calculation.
+
+---
+
+# 3(a). Transformation of \(X\)
+
+Suppose
+
+\[
+X'=10(X-1).
+\]
+
+This can be written as
+
+\[
+X'=10X-10.
+\]
+
+The original regression is
+
+\[
+Y=A+BX.
+\]
+
+We need to express this model in terms of \(X'\).
+
+Since
+
+\[
+X'=10(X-1),
+\]
+
+we have
+
+\[
+X=\frac{X'}{10}+1.
+\]
+
+Substituting this into the original regression equation,
+
+\[
+Y
+=
+A+B\left(\frac{X'}{10}+1\right).
+\]
+
+Therefore,
+
+\[
+Y
+=
+A+B+\frac{B}{10}X'.
+\]
+
+Thus the transformed regression has slope
+
+\[
+\boxed{
+B'=\frac{B}{10}
+}.
+\]
+
+Because multiplying a random variable by a constant multiplies its standard error by the absolute value of that constant,
+
+\[
+SE(B')
+=
+\frac{1}{10}SE(B).
+\]
+
+Therefore,
+
+\[
+\boxed{
+SE(B')=\frac{SE(B)}{10}
+}.
+\]
+
+### Transformed t-statistic
+
+The original t-statistic is
+
+\[
+t_0=\frac{B}{SE(B)}.
+\]
+
+The transformed t-statistic is
+
+\[
+t'_0
+=
+\frac{B'}{SE(B')}.
+\]
+
+Substituting,
+
+\[
+t'_0
+=
+\frac{B/10}{SE(B)/10}.
+\]
+
+Therefore,
+
+\[
+\boxed{
+t'_0=\frac{B}{SE(B)}=t_0
+}.
+\]
+
+Hence, the t-statistic is unchanged.
+
+### Numerical calculation
+
+If the original Exercise 5.4 values are entered below, R will calculate the transformed values automatically.
+
+```{r x-transformation-calculation}
+if (!is.na(B_original) && !is.na(SE_B_original)) {
+  
+  B_prime <- B_original / 10
+  SE_B_prime <- SE_B_original / 10
+  t_original <- B_original / SE_B_original
+  t_prime <- B_prime / SE_B_prime
+  
+  x_results <- data.frame(
+    Quantity = c(
+      "Original slope B",
+      "Original SE(B)",
+      "Original t-statistic",
+      "Transformed slope B'",
+      "Transformed SE(B')",
+      "Transformed t-statistic"
+    ),
+    Value = c(
+      B_original,
+      SE_B_original,
+      t_original,
+      B_prime,
+      SE_B_prime,
+      t_prime
+    )
+  )
+  
+  kable(
+    x_results,
+    digits = 5,
+    caption = "Results After Transformation of X"
+  )
+  
+} else {
+  
+  cat(
+    "Enter the original B and SE(B) values from Exercise 5.4 ",
+    "in the setup section to obtain the numerical answers."
+  )
+}
+```
+
+### Answer for 3(a)
+
+Therefore,
+
+\[
+\boxed{
+SE(B')=\frac{SE(B)}{10}
+}
+\]
+
+and
+
+\[
+\boxed{
+t'_0=t_0
+}.
+\]
+
+The transformation changes the numerical scale of the slope and its standard error by the same factor, so their ratio remains unchanged.
+
+---
+
+# 3(b). Transformation of \(Y\)
+
+Now suppose
+
+\[
+Y''=5(Y+2).
+\]
+
+Expanding,
+
+\[
+Y''=5Y+10.
+\]
+
+The original regression is
+
+\[
+Y=A+BX.
+\]
+
+Multiplying by 5 and adding 10,
+
+\[
+5Y+10
+=
+5A+5BX+10.
+\]
+
+Therefore,
+
+\[
+Y''
+=
+(5A+10)+5BX.
+\]
+
+Hence, the transformed slope is
+
+\[
+\boxed{
+B''=5B
+}.
+\]
+
+The standard error is also multiplied by 5:
+
+\[
+\boxed{
+SE(B'')=5SE(B)
+}.
+\]
+
+### Transformed t-statistic
+
+The transformed t-statistic is
+
+\[
+t''_0
+=
+\frac{B''}{SE(B'')}.
+\]
+
+Substituting,
+
+\[
+t''_0
+=
+\frac{5B}{5SE(B)}.
+\]
+
+Therefore,
+
+\[
+\boxed{
+t''_0
+=
+\frac{B}{SE(B)}
+=
+t_0
+}.
+\]
+
+Thus, the t-statistic remains unchanged.
+
+### Numerical calculation
+
+```{r y-transformation-calculation}
+if (!is.na(B_original) && !is.na(SE_B_original)) {
+  
+  B_double_prime <- 5 * B_original
+  SE_B_double_prime <- 5 * SE_B_original
+  t_original <- B_original / SE_B_original
+  t_double_prime <- B_double_prime / SE_B_double_prime
+  
+  y_results <- data.frame(
+    Quantity = c(
+      "Original slope B",
+      "Original SE(B)",
+      "Original t-statistic",
+      "Transformed slope B''",
+      "Transformed SE(B'')",
+      "Transformed t-statistic"
+    ),
+    Value = c(
+      B_original,
+      SE_B_original,
+      t_original,
+      B_double_prime,
+      SE_B_double_prime,
+      t_double_prime
+    )
+  )
+  
+  kable(
+    y_results,
+    digits = 5,
+    caption = "Results After Transformation of Y"
+  )
+  
+} else {
+  
+  cat(
+    "Enter the original B and SE(B) values from Exercise 5.4 ",
+    "in the setup section to obtain the numerical answers."
+  )
+}
+```
+
+### Answer for 3(b)
+
+Therefore,
+
+\[
+\boxed{
+SE(B'')=5SE(B)
+}
+\]
+
+and
+
+\[
+\boxed{
+t''_0=t_0
+}.
+\]
+
+The slope and its standard error are both multiplied by 5, leaving their ratio unchanged.
+
+---
+
+# 3(c). Effect on Hypothesis Tests and Confidence Intervals
+
+Consider a hypothesis test concerning the regression slope:
+
+\[
+H_0:\beta=0
+\]
+
+against
+
+\[
+H_a:\beta\neq0.
+\]
+
+The test statistic is
+
+\[
+t=\frac{B-0}{SE(B)}.
+\]
+
+## Transformation of \(X\)
+
+For
+
+\[
+X'=10(X-1),
+\]
+
+we have
+
+\[
+B'=\frac{B}{10}
+\]
+
+and
+
+\[
+SE(B')=\frac{SE(B)}{10}.
+\]
+
+Therefore,
+
+\[
+\frac{B'}{SE(B')}
+=
+\frac{B/10}{SE(B)/10}
+=
+\frac{B}{SE(B)}.
+\]
+
+Thus, the t-statistic is unchanged.
+
+Therefore, the p-value and statistical decision are also unchanged.
+
+---
+
+## Transformation of \(Y\)
+
+For
+
+\[
+Y''=5(Y+2),
+\]
+
+we have
+
+\[
+B''=5B
+\]
+
+and
+
+\[
+SE(B'')=5SE(B).
+\]
+
+Therefore,
+
+\[
+\frac{B''}{SE(B'')}
+=
+\frac{5B}{5SE(B)}
+=
+\frac{B}{SE(B)}.
+\]
+
+Again, the t-statistic and p-value remain unchanged.
+
+---
+
+## Confidence Intervals
+
+An approximate \(100(1-\alpha)\%\) confidence interval for \(\beta\) is
+
+\[
+B\pm t_{\alpha/2,n-2}SE(B).
+\]
+
+### Effect of transforming \(X\)
+
+Since
+
+\[
+B'=\frac{B}{10}
+\]
+
+and
+
+\[
+SE(B')=\frac{SE(B)}{10},
+\]
+
+the confidence interval becomes
+
+\[
+\frac{B}{10}
+\pm
+t_{\alpha/2,n-2}
+\frac{SE(B)}{10}.
+\]
+
+Therefore, every endpoint is divided by 10.
+
+The confidence interval represents the same underlying relationship but in the new units of \(X'\).
+
+### Effect of transforming \(Y\)
+
+Since
+
+\[
+B''=5B
+\]
+
+and
+
+\[
+SE(B'')=5SE(B),
+\]
+
+the confidence interval becomes
+
+\[
+5B
+\pm
+t_{\alpha/2,n-2}
+5SE(B).
+\]
+
+Therefore, every endpoint is multiplied by 5.
+
+The interval is therefore expressed in the new units of \(Y''\).
+
+---
+
+# Summary of Transformation Effects
+
+```{r transformation-summary}
+transformation_summary <- data.frame(
+  Transformation = c(
+    "Original",
+    "X' = 10(X - 1)",
+    "Y'' = 5(Y + 2)"
+  ),
+  
+  Slope = c(
+    "B",
+    "B / 10",
+    "5B"
+  ),
+  
+  Standard_Error = c(
+    "SE(B)",
+    "SE(B) / 10",
+    "5SE(B)"
+  ),
+  
+  t_statistic = c(
+    "t",
+    "t",
+    "t"
+  ),
+  
+  Confidence_Interval = c(
+    "B ± t*SE(B)",
+    "(B ± t*SE(B)) / 10",
+    "5(B ± t*SE(B))"
+  )
+)
+
+kable(
+  transformation_summary,
+  caption = "Effect of Linear Transformations on Regression Results"
+)
+```
+
+---
+
+# Final Answers
+
+## Question 1
+
+The least-squares slope estimator can be written as
+
+\[
+B=
+\sum_{i=1}^{n}
+\frac{x_i-\bar{x}}{S_{xx}}Y_i.
+\]
+
+Using
+
+\[
+E(Y_i)=\alpha+\beta x_i,
+\]
+
+we obtain
+
+\[
+\boxed{E(B)=\beta}.
+\]
+
+Thus, \(B\) is unbiased.
+
+The intercept estimator is
+
+\[
+A=\bar{Y}-B\bar{x}.
+\]
+
+It can also be written as a linear combination of the \(Y_i\)'s, and therefore
+
+\[
+\boxed{E(A)=\alpha}.
+\]
+
+Thus, \(A\) is unbiased.
+
+---
+
+## Question 2
+
+Under the assumptions of linearity, constant variance, independence, and fixed \(x_i\)'s,
+
+\[
+\boxed{
+Var(B)=\frac{\sigma^2}{S_{xx}}
+}
+\]
+
+and
+
+\[
+\boxed{
+Var(A)
+=
+\sigma^2
+\left(
+\frac{1}{n}
++
+\frac{\bar{x}^2}{S_{xx}}
+\right)
+}.
+\]
+
+Consequently,
+
+\[
+\boxed{
+SE(B)=\frac{\sigma}{\sqrt{S_{xx}}}
+}
+\]
+
+and
+
+\[
+\boxed{
+SE(A)
+=
+\sigma
+\sqrt{
+\frac{1}{n}
++
+\frac{\bar{x}^2}{S_{xx}}
+}
+}.
+\]
+
+---
+
+## Question 3(a)
+
+For
+
+\[
+X'=10(X-1),
+\]
+
+the transformed slope is
+
+\[
+\boxed{B'=\frac{B}{10}}.
+\]
+
+Therefore,
+
+\[
+\boxed{SE(B')=\frac{SE(B)}{10}}
+\]
+
+and
+
+\[
+\boxed{t'_0=t_0}.
+\]
+
+---
+
+## Question 3(b)
+
+For
+
+\[
+Y''=5(Y+2),
+\]
+
+the transformed slope is
+
+\[
+\boxed{B''=5B}.
+\]
+
+Therefore,
+
+\[
+\boxed{SE(B'')=5SE(B)}
+\]
+
+and
+
+\[
+\boxed{t''_0=t_0}.
+\]
+
+---
+
+## Question 3(c)
+
+In general, linear transformations of \(X\) and \(Y\) **change the numerical scale of regression coefficients and their standard errors**, but they do not change the underlying statistical evidence for the relationship.
+
+For positive scale transformations:
+
+- The slope changes according to the change in measurement units.
+- The standard error changes by the same scale factor.
+- The t-statistic remains unchanged.
+- The p-value remains unchanged.
+- The hypothesis-test decision remains unchanged.
+- \(R^2\) remains unchanged.
+- Confidence intervals are rescaled to the new units.
+- The underlying fitted relationship is unchanged.
+
+Therefore, linear transformations change the **representation** of the regression model but not the **statistical conclusion** about the existence of a linear relationship.
+
+---
+
+# Overall Conclusion
+
+This assessment demonstrates that the ordinary least-squares estimators of the intercept and slope are unbiased under the standard assumptions of the simple linear regression model.
+
+The sampling variances are determined by the error variance and the distribution of the fixed explanatory values. Specifically,
+
+\[
+Var(B)=\frac{\sigma^2}{S_{xx}}
+\]
+
+and
+
+\[
+Var(A)
+=
+\sigma^2
+\left(
+\frac{1}{n}
++
+\frac{\bar{x}^2}{S_{xx}}
+\right).
+\]
+
+The analysis of linear transformations shows that changing the scale or origin of the explanatory or response variable changes the numerical values of regression coefficients and standard errors, but does not change the corresponding t-statistics or statistical conclusions.
+
+For the transformation
+
+\[
+X'=10(X-1),
+\]
+
+both the slope and its standard error are divided by 10.
+
+For the transformation
+
+\[
+Y''=5(Y+2),
+\]
+
+both the slope and its standard error are multiplied by 5.
+
+In both cases, the t-statistic remains unchanged. Consequently, hypothesis tests concerning the regression slope lead to the same statistical conclusions, while confidence intervals are simply expressed in the appropriate transformed units.
